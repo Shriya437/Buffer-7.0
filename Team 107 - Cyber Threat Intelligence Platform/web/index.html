@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Threat Intelligence Platform</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div id="auth-screen">
+        <div class="auth-box card">
+            <div class="logo-circle"></div>
+            <h2>SOC Access</h2>
+            <input type="text" id="username" placeholder="Operator ID">
+            <input type="password" id="password" placeholder="Passcode">
+            <p id="auth-msg"></p>
+            <div class="btn-group">
+                <button onclick="login()" class="primary-btn">Authenticate</button>
+                <button onclick="signup()" class="secondary-btn">Request Access</button>
+            </div>
+            <p class="auth-hint">Try admin / password123</p>
+        </div>
+    </div>
+
+    <div id="app-container" style="display: none;">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <h2>CTI Platform</h2>
+                <span id="user-display" class="badge bg-green">User: Admin</span>
+            </div>
+            <ul class="nav-links">
+                <li onclick="switchTab('dashboard')" id="tab-dashboard" class="active">Dashboard</li>
+                <li onclick="switchTab('phishing')" id="tab-phishing">Phishing Analysis</li>
+                <li onclick="switchTab('login')" id="tab-login">Login Monitor</li>
+                <li onclick="switchTab('network')" id="tab-network">Network Impact</li>
+                <li onclick="switchTab('risk')" id="tab-risk">Risk & Alerts</li>
+            </ul>
+            <div class="sidebar-footer">
+                <button onclick="simulateScenario()" id="btn-simulate" class="warning-btn full-w mb-10">Simulate Attack</button>
+                <button onclick="resetSystem()" id="btn-reset" class="secondary-btn full-w mb-10">Reset System</button>
+                <button onclick="logout()" class="danger-btn full-w">Disconnect</button>
+            </div>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="content">
+            
+            <!-- Dashboard Tab -->
+            <section id="pane-dashboard" class="pane active-pane">
+                <div class="header-banner">
+                    <h1>Security Operations Dashboard</h1>
+                    <p>Real-time threat monitoring and mitigation system.</p>
+                </div>
+                
+                <div class="grid-layout">
+                    <!-- Top Metrics -->
+                    <div class="card metric-card">
+                        <h3>Current Risk Level</h3>
+                        <h1 id="metric-risk" class="text-green">LOW</h1>
+                        <p class="text-muted">Calculated dynamically</p>
+                    </div>
+                    <div class="card metric-card">
+                        <h3>Active Threats</h3>
+                        <h1 id="metric-alerts" class="text-blue">0</h1>
+                        <p class="text-muted">Correlated events</p>
+                    </div>
+                    <div class="card metric-card">
+                        <h3>Blocked Entities</h3>
+                        <h1 id="metric-blocked" class="text-red">0</h1>
+                        <p class="text-muted">Network Kill Switch</p>
+                    </div>
+
+                    <!-- Activity Log -->
+                    <div class="card col-span-3 log-container">
+                        <h3>System Activity Log</h3>
+                        <ul id="activity-log" class="terminal-log">
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Phishing Tab -->
+            <section id="pane-phishing" class="pane">
+                <div class="header-banner">
+                    <h1>Phishing Intelligence</h1>
+                    <p>Submitting domains for suspicious pattern validation.</p>
+                </div>
+                
+                <div class="card">
+                    <div class="input-group">
+                        <input type="text" id="url-input" placeholder="Enter suspicious URL (e.g. securebanking-login.com)" value="securebanking-login.com">
+                        <button onclick="analyzeUrl()" id="btn-analyze" class="primary-btn">Begin Analysis</button>
+                    </div>
+                    
+                    <div class="process-box" id="url-process-box" style="display:none;">
+                        <h4>Analysis Process:</h4>
+                        <ul class="step-list" id="url-steps">
+                        </ul>
+                        <div class="verdict-banner" id="url-verdict" style="display:none;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Login Tab -->
+            <section id="pane-login" class="pane">
+                <div class="header-banner">
+                    <h1>Identity Protection</h1>
+                    <p>Monitoring authentication clusters for anomaly detection.</p>
+                </div>
+
+                <div class="grid-layout cols-2">
+                    <div class="card">
+                        <h3>Simulate Ingress Traffic</h3>
+                        <br>
+                        <input type="text" id="ip-input" value="10.0.0.42" placeholder="Source IP">
+                        <button onclick="simulateLoginFail()" id="btn-inject" class="primary-btn mt-10">Inject Failed Login Request</button>
+                    </div>
+
+                    <div class="card">
+                        <h3>Processing Logic</h3>
+                        <div class="process-box">
+                            <p><strong>Step 1:</strong> Tracking recent authentication events.</p>
+                            <p><strong>Step 2:</strong> Evaluating failures against time threshold:</p>
+                            
+                            <div class="progress-bar-bg mt-10">
+                                <div class="progress-bar-fill" id="login-progress" style="width: 0%;"></div>
+                            </div>
+                            <h2 class="text-center mt-10"><span id="login-count">0</span> / 5 Threshold</h2>
+                            
+                            <p id="login-status-text" class="text-center mt-10 text-muted">Awaiting activity...</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Network Tab -->
+            <section id="pane-network" class="pane">
+                <div class="header-banner">
+                    <h1>Network Impact Assessment</h1>
+                    <p>Evaluating lateral movement possibilities through internal topology.</p>
+                </div>
+
+                <div class="card">
+                    <h3>Hypothetical Breach Path: Internet to Database</h3>
+                    <div class="process-box mt-20">
+                        <p class="text-muted mb-10" id="network-process-text">No attack detected yet.</p>
+                        <div class="graph-path" id="network-path"></div>
+                        <h4 class="mt-20">Blast Radius: <span class="text-red" id="network-blast-radius">0%</span> of network exposed</h4>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Alerts Risk Panel -->
+            <section id="pane-risk" class="pane">
+                <div class="header-banner">
+                    <h1>Prioritized Risk Panel</h1>
+                    <p>Events dynamically ordered by evaluated severity.</p>
+                </div>
+
+                <div class="card bg-darker">
+                    <table class="alert-table">
+                        <thead>
+                            <tr>
+                                <th>Severity</th>
+                                <th>Level</th>
+                                <th>Incident Description</th>
+                                <th>System Reasoning</th>
+                            </tr>
+                        </thead>
+                        <tbody id="risk-table-body">
+                            <tr><td colspan="4" class="text-center text-muted">No active threats.</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+        </main>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+Source,Target,Weight
+Internet,Firewall,1
+Firewall,Web_Server,2
+Web_Server,App_Server,4
+App_Server,Database,8
+Web_Server,Shared_Drive,3
+Shared_Drive,HR_System,5
